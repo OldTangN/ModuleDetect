@@ -1,0 +1,544 @@
+﻿<Window x:Name="ControlBox" x:Class="mkjcApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:mkjcApp"
+        xmlns:gauge="clr-namespace:CircularGauge;assembly=CircularGauge"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" Closing="ControlBox_Closing"
+        Title="模块自动检测系统V1.0" Height="1080" Width="1920" Background="#E5E5E5" WindowStyle="None" WindowState="Maximized">
+    <Grid Margin="1,0,-1,0">
+
+
+        <Menu Height="40" HorizontalAlignment="Left" Name="menu1" VerticalAlignment="Top" Width="1400" Margin="60,100,0,0" Background="#E5E5E5">
+
+            <MenuItem Header="方案设置" x:Name="ConfigBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center"  Click="SchemeButton_Click" >
+                <MenuItem.Icon >
+                    <Image Source="img/config.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="开始检测" x:Name="StartBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center"  Click="StartBtn_Click">
+                <MenuItem.Icon >
+                    <Image Source="img/start.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="重新检测" x:Name="RestartBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center"  Click="Button_Click" >
+                <MenuItem.Icon >
+                    <Image Source="img/refresh.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <!--
+            <MenuItem Header="停止检测" x:Name="AbortBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Stop_Click">
+                <MenuItem.Icon >
+                    <Image Source="img/stop.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            -->
+
+            <MenuItem Header="数据查询" x:Name="HistoryBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center"  Click="HistoryBtn_Click">
+                <MenuItem.Icon >
+                    <Image Source="img/history.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Visibility="Collapsed" Header="用户管理" x:Name="UserBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="UserBtn_Click">
+                <MenuItem.Icon >
+                    <Image Source="img/user.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Visibility="Collapsed" Header="结果提交" x:Name="ResultBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="ResultBtn_Click">
+                <MenuItem.Icon >
+                    <Image Source="img/home.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="手动录入" x:Name="InputBtn" FontSize="16"  HorizontalAlignment="Center" VerticalAlignment="Center" Click="InputBtn_Click">
+                <MenuItem.Icon >
+                    <Image Source="img/home.png"/>
+                </MenuItem.Icon>
+            </MenuItem>
+        </Menu>
+
+        <Grid  Background="#000000" Margin="444,150,0,500" Height="160" Width="300" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <Button Name="zly" Grid.Row="0" Grid.Column="1" Style="{StaticResource MaterialDesignRaisedButton}" 
+                        materialDesign:ButtonProgressAssist.IsIndeterminate="True" Background="Yellow"
+                        FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Black" Margin="10 10 10 4">
+                直流源
+            </Button>
+            <TextBlock Name="zly_dy" Grid.Row="2" Grid.Column="0" FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Yellow" Margin="16 16 16 4" Style="{StaticResource MaterialDesignHeadlineTextBlock}">
+                    <Label x:Name="DCPVValue" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="69" Foreground="Yellow"/>
+            </TextBlock>
+            <Separator Grid.Row="1" Foreground="White" Style="{StaticResource MaterialDesignLightSeparator}" />
+            <TextBlock Grid.Row="3" Grid.Column="0" FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Yellow" Margin="16 16 16 4" Style="{StaticResource MaterialDesignBody2TextBlock}">
+                    电压(V)
+            </TextBlock>
+            <TextBlock Name="zly_dl" Grid.Row="2" Grid.Column="1" FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Yellow" Margin="16 16 16 4" Style="{StaticResource MaterialDesignHeadlineTextBlock}">
+                    <Label x:Name="DCPIValue" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="69" Foreground="Yellow"/>
+            </TextBlock>
+            <Separator Grid.Row="1" Grid.Column="1" Foreground="White" Style="{StaticResource MaterialDesignLightSeparator}" />
+            <TextBlock Grid.Row="3" Grid.Column="1" FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Yellow" Margin="16 16 16 4" Style="{StaticResource MaterialDesignBody2TextBlock}">
+                    电流(mA)
+            </TextBlock>
+            <TextBlock Name="zly_ycms" Grid.Row="2" Grid.Column="2" FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Yellow" Margin="16 16 16 4" Style="{StaticResource MaterialDesignHeadlineTextBlock}">
+                    <Label x:Name="DCPRValue" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="69"/>
+            </TextBlock>
+            <Separator Grid.Row="1" Grid.Column="2" Foreground="White" Style="{StaticResource MaterialDesignLightSeparator}" />
+            <TextBlock Grid.Row="3" Grid.Column="2" FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Yellow" Margin="16 16 16 4" Style="{StaticResource MaterialDesignBody2TextBlock}">
+                    远程模式
+            </TextBlock>
+        </Grid>
+
+        <Grid Background="#000000" Margin="1144,150,0,500" Height="160" Width="300" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="207"/>
+                <ColumnDefinition Width="93"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+            <Button Name="ghy" Grid.Row="0" Grid.Column="0" Style="{StaticResource MaterialDesignRaisedButton}" 
+                        materialDesign:ButtonProgressAssist.Value="-1"  VerticalContentAlignment="Center"
+                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="True" 
+                        materialDesign:ButtonProgressAssist.IsIndeterminate="True" Background="Red"
+                        FontFamily="Microsoft YaHei" FontSize="16" HorizontalAlignment="Center" Foreground="Black" Margin="110,12,17,6" Height="Auto" Width="80" >
+                功耗仪
+            </Button>
+            <TextBlock Grid.Row="3" Grid.Column="0" FontSize="14" FontFamily="Microsoft YaHei" HorizontalAlignment="Center" Foreground="Red" Margin="10,10,119,20" Style="{StaticResource MaterialDesignHeadlineTextBlock}" Width="78">
+                    动态功耗值
+            </TextBlock>
+            <Separator Grid.Row="1" Grid.Column="0" Foreground="White" Style="{StaticResource MaterialDesignLightSeparator}" Height="Auto" Margin="0,2,0,42" Grid.RowSpan="2" />
+            <Separator Grid.Row="1" Grid.Column="1" Foreground="White" Style="{StaticResource MaterialDesignLightSeparator}" Height="Auto" Margin="0,2,0,42" Grid.RowSpan="2" />
+
+            <Label x:Name="GLStation" Foreground="Red" FontSize="14" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="70" Height="33" Grid.Column="1" Margin="10,13,0,0" Grid.Row="2"/>
+            <TextBlock HorizontalAlignment="Left" Margin="13,16,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Width="0"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" FontSize="14" FontFamily="Microsoft YaHei" HorizontalAlignment="Center" Foreground="Red" Margin="10,16,117,12" Style="{StaticResource MaterialDesignHeadlineTextBlock}" Width="80" Text="静态功耗值"/>
+            <Label x:Name="DTGLValue_Copy" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Grid.Column="1" Margin="1032,163,-1011,-139" Grid.Row="3"/>
+            <Label x:Name="DTGLValue_Copy1" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Grid.Column="1" Margin="1032,163,-1011,-139" Grid.Row="3"/>
+        </Grid>
+
+        <Grid Background="#000000" Margin="794,150,0,500" Height="160" Width="300" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="60" />
+            </Grid.RowDefinitions>
+            <Label x:Name="SysMsgLabel" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="" HorizontalAlignment="Left" VerticalAlignment="Center" Height="32" Width="260" FontSize="16" Foreground="#FFFFFF" Margin="24,10,0,18"/>
+            <Label Content="工位号：" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="150" Height="30"  FontSize="16" Foreground="#FFFFFF"/>
+            <Label x:Name="GwIndexLable" Grid.Row="0" Grid.Column="1" Content="" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="150" Height="30"  FontSize="16" Foreground="#FFFFFF"/>
+            <Label Content="当前检测项：" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" Width="150" Height="30"  FontSize="16" Foreground="#FFFFFF"/>
+            <Label x:Name="CurrentCheckName" Grid.Row="1" Grid.Column="1" Content="" HorizontalAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Center" Width="150" Height="30"  FontSize="16" Foreground="#FFFFFF"/>
+        </Grid>
+        <!--
+        <Grid Margin="1850,150,0,0" Height="720" Width="60" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="120" />
+                <RowDefinition Height="120" />
+                <RowDefinition Height="120" />
+                <RowDefinition Height="120" />
+                <RowDefinition Height="120" />
+                <RowDefinition Height="120" />
+            </Grid.RowDefinitions>
+            <Button x:Name="RestartBtn" FontSize="16" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Click="Button_Click" Height="100" IsEnabled="True" Background="#009696" Foreground="#DD150808" BorderBrush="#FF8D8799">
+                <TextBlock Text="重新检测" TextWrapping="Wrap" Width="17" Height="90"/>
+            </Button>
+            <Button x:Name="StartBtn" FontSize="16" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="100" IsEnabled="True" Click="StartBtn_Click" Background="#009696" Foreground="#DD150808" BorderBrush="#FF8D8799" >
+                <TextBlock Text="检测启动" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="ConfigBtn" FontSize="16" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="100" IsEnabled="True" Click="SchemeButton_Click" Background="#009696" Foreground="#DD150808" BorderBrush="#FF8D8799" >
+                <TextBlock Text="方案设置" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="AbortBtn" FontSize="16" Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="100" IsEnabled="True" Click="Button_Stop_Click" Background="#009696" Foreground="#DD150808" BorderBrush="#FF8D8799" >
+                <TextBlock Text="检测终止" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="LogoutBtn" FontSize="16" Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="100" Click="LogoutBtn_Click"  Background="#009696" Foreground="#DD150808" BorderBrush="#FF8D8799" >
+                <TextBlock Text="退出登录" TextWrapping="Wrap"/>
+            </Button>
+            <Button x:Name="QuitBtn" FontSize="16" Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" Height="100" Background="#009696" Foreground="#DD150808" BorderBrush="#FF8D8799" Click="QuitBtn_Click" >
+                <TextBlock Text="退出系统" TextWrapping="Wrap"/>
+            </Button>
+        </Grid>
+-->
+
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="1800"/>
+                <ColumnDefinition Width="60"/>
+            </Grid.ColumnDefinitions>
+            <Path Grid.Column="0" Data="M0 0 L60 0 L 60 100 " Fill="#009696" />
+            <Line Grid.Column="1" Grid.ColumnSpan="2" X1="80" Y1="20" X2="1720" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="160"/>
+            <Label Grid.Column="1" Content="元启智能通信模块自动检测系统" FontFamily="Microsoft YaHei" HorizontalAlignment="Left" Margin="670,30,0,0" VerticalAlignment="Top" Width="538" FontSize="36" />
+            <Path Grid.Column="2" Data="M0 0 L50 0 L 0 100 " Fill="#009696" />
+            <Grid Grid.Column="3" HorizontalAlignment="Left" Height="100" Margin="130,208,0,0" VerticalAlignment="Top" Width="100"/>
+            <Label x:Name="DTGLValue" Content="" Foreground="Red" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Grid.Column="1" Margin="1179,263,0,0"/>
+            <Label x:Name="JTGLValue" Content="" Foreground="Red" FontSize="14" Grid.Column="1" HorizontalAlignment="Left" Margin="1179,221,0,0" VerticalAlignment="Top" Width="72" Height="28"/>
+            <Label x:Name="GLLockStation" Foreground="Red" FontSize="14" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Height="34" Grid.Column="1" Margin="1299,263,0,0"/>
+        </Grid>
+        <local:UCDetect x:Name="gzmodel1" HorizontalAlignment="Left" Height="286" Margin="94,0,0,450" Width="340" VerticalAlignment="Bottom"/>
+        <local:UCDetect x:Name="gzmodel2" HorizontalAlignment="Left" Height="286" Margin="444,0,0,450" Width="340" VerticalAlignment="Bottom"/>
+        <local:UCDetect x:Name="gzmodel3" HorizontalAlignment="Left" Height="286" Margin="794,0,0,450" Width="340" VerticalAlignment="Bottom"/>
+        <local:UCDetect x:Name="gzmodel4" HorizontalAlignment="Left" Height="286" Margin="1144,0,0,450" Width="340" VerticalAlignment="Bottom"/>
+        <local:UCDetect x:Name="gzmodel5" HorizontalAlignment="Left" Height="286" Margin="1494,0,0,450" Width="340" VerticalAlignment="Bottom"/>
+        <local:UCDetect x:Name="gzmodel6" HorizontalAlignment="Left" Height="288" Margin="94,645,0,0" Width="340" VerticalAlignment="Top"/>
+        <local:UCDetect x:Name="gzmodel7" HorizontalAlignment="Left" Height="288" Margin="444,645,0,0" Width="340" VerticalAlignment="Top"/>
+        <local:UCDetect x:Name="gzmodel8" HorizontalAlignment="Left" Height="288" Margin="794,645,0,0" Width="340" VerticalAlignment="Top"/>
+        <local:UCDetect x:Name="gzmodel9" HorizontalAlignment="Left" Height="288" Margin="1144,645,0,0" Width="340" VerticalAlignment="Top"/>
+        <local:UCDetect x:Name="gzmodel10" HorizontalAlignment="Left" Height="288" Margin="1494,645,0,0" Width="340" VerticalAlignment="Top"/>
+
+        <Grid Margin="0,990,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="1800"/>
+                <ColumnDefinition Width="60"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+
+            <Path Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Data="M0 85 L60 0 L 60 85 " Fill="#009696" />
+            <Path Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Data="M0 0 L55 85 L 0 85 " Fill="#009696" />
+
+            <Grid Grid.Column="1" Grid.Row="0"  Height="40" Width="1800">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="51"/>
+                    <ColumnDefinition Width="49"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <Line Grid.Column="0" Grid.ColumnSpan="4" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40" HorizontalAlignment="Left" Width="218"/>
+                <Label Content="任务号：" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3,14,3"/>
+                <Label x:Name="RenWuHao" Content="" VerticalAlignment="Center" FontSize="12" Margin="80,3,0,3" HorizontalAlignment="Left" Width="126" Grid.ColumnSpan="4"/>
+                <Line Grid.Column="3" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="操作员：" Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Label x:Name="CaoZuoYuan" Content="" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+
+                <Line Grid.Column="5" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Line Grid.Column="7" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="待检总量：" Grid.Column="7" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Label x:Name="DaiJianZongLiang" Content="" Grid.Column="8" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Line Grid.Column="9" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="已检数量：" Grid.Column="9" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Label x:Name="YiJianShuLiang" Content="" Grid.Column="10" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+
+
+                <Line Grid.Column="11" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="缺陷数量：" Grid.Column="11" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Label x:Name="QueXianShuLiang" Content="" Grid.Column="12" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Line Grid.Column="13" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+
+                <Line Grid.Column="15" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="总超时：" Grid.Column="15" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Label x:Name="GWTotalTimeOut" Content="" Grid.Column="16" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Line Grid.Column="17" Grid.ColumnSpan="2" X1="20" Y1="20" X2="180" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="单项超时：" Grid.Column="17" HorizontalAlignment="Right" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+                <Label x:Name="TheCheckTimeOut" Content="" Grid.Column="18" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" Margin="0,3"/>
+            </Grid>
+
+
+            <Grid Grid.Column="1" Grid.Row="1" Height="40" Width="1800">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <Line Grid.Column="0" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="直流源初始" Grid.Column="0" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G1" Grid.Column="1" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R1" Grid.Column="1" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="2" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="直流源输出" Grid.Column="2" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G2" Grid.Column="3" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R2" Grid.Column="3" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="4" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="功率仪初始" Grid.Column="4" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G3" Grid.Column="5" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R3" Grid.Column="5" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="6" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="抄控器投入" Grid.Column="6" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G4" Grid.Column="7" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R4" Grid.Column="7" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="8" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="抄控器退出" Grid.Column="8" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G5" Grid.Column="9" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R5" Grid.Column="9" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="10" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="衰减器投入" Grid.Column="10" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G6" Grid.Column="11" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R6" Grid.Column="11" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="12" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="衰减器退出" Grid.Column="12" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G7" Grid.Column="13" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R7" Grid.Column="13" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="14" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="继电器复归" Grid.Column="14" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G8" Grid.Column="15" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R8" Grid.Column="15" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="16" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="   A相操作" Grid.Column="16" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G9" Grid.Column="17" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R9" Grid.Column="17" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="18" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="   B相操作" Grid.Column="18" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G10" Grid.Column="19" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R10" Grid.Column="19" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="20" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="   C相操作" Grid.Column="20" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G11" Grid.Column="21" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R11" Grid.Column="21" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Line Grid.Column="22" Grid.ColumnSpan="2" X1="20" Y1="20" X2="130" Y2="20" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="40"/>
+                <Label Content="方案初始化" Grid.Column="22" HorizontalAlignment="Left"  VerticalAlignment="Center" FontSize="18"/>
+                <Canvas x:Name="G12" Grid.Column="23" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Green" Fill="Green">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+                <Canvas x:Name="R12" Grid.Column="23" Margin="0,10" Visibility="Hidden">
+                    <Path Stroke="Red" Fill="Red">
+                        <Path.Data>
+                            <EllipseGeometry RadiusX="10" RadiusY="10" Center="10,10"/>
+                        </Path.Data>
+                    </Path>
+                </Canvas>
+            </Grid>
+        </Grid>
+        <Line  X1="60" Y1="1030" X2="1855" Y2="1030" StrokeEndLineCap="Square" StrokeStartLineCap="Square" Stroke="#009696"  StrokeThickness="10"/>
+
+        <!--
+        <Button x:Name="DCPW_BTN" Content="直流源投入" HorizontalAlignment="Left" Margin="145,296,0,0" VerticalAlignment="Top" Width="120" Height="30" Click="DCPW_BTN_Click" FontSize="14" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="GongLv_Btn" Content="直流源退出" HorizontalAlignment="Left" Margin="145,331,0,0" VerticalAlignment="Top" Width="120" Height="33" Click="GongLv_Btn_Click" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="180" Margin="506,201,0,0" VerticalAlignment="Top" Width="164"/>
+        <Label Content="抄控器状态：" HorizontalAlignment="Left" Margin="508,170,0,0" VerticalAlignment="Top"/>
+        <Label Content="抄控器1" HorizontalAlignment="Left" Margin="506,220,0,0" VerticalAlignment="Top"/>
+        <Label Content="抄控器2" HorizontalAlignment="Left" Margin="506,251,0,0" VerticalAlignment="Top"/>
+        <Label Content="抄控器3" HorizontalAlignment="Left" Margin="506,284,0,0" VerticalAlignment="Top"/>
+        <Label Content="抄控器4" HorizontalAlignment="Left" Margin="506,315,0,0" VerticalAlignment="Top"/>
+        <Label Content="抄控器5" HorizontalAlignment="Left" Margin="506,345,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="TripBtn1" Content="分" HorizontalAlignment="Left" Margin="559,220,0,0" VerticalAlignment="Top" Width="48" Click="TripBtn1_Click" FontSize="14" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="CloseBtn1" Content="合"  HorizontalAlignment="Left" Margin="612,220,0,0" VerticalAlignment="Top" Width="48" Click="CloseBtn1_Click" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="TripBtn2" Content="分" HorizontalAlignment="Left" Margin="559,251,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="CloseBtn2" Content="合" HorizontalAlignment="Left" Margin="612,251,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="TripBtn3" Content="分" HorizontalAlignment="Left" Margin="559,284,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="CloseBtn3" Content="合" HorizontalAlignment="Left" Margin="612,284,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="TripBtn4" Content="分" HorizontalAlignment="Left" Margin="559,315,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="CloseBtn4" Content="合" HorizontalAlignment="Left" Margin="612,315,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="TripBtn5" Content="分" HorizontalAlignment="Left" Margin="559,345,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="CloseBtn5" Content="合" HorizontalAlignment="Left" Margin="612,345,0,0" VerticalAlignment="Top" Width="48" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+-->
+
+        <!--
+        <Button x:Name="SchemeBtn" Content="基础初始化" HorizontalAlignment="Left" Margin="1576,252,0,0" VerticalAlignment="Top" Width="90" Height="40" IsEnabled="True" Click="SchemeBtn_Click" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="UserBtn" Content="用户管理" Click="UserBtn_Click" HorizontalAlignment="Left" Margin="1452,251,0,0" VerticalAlignment="Top" Width="90" Height="40" IsEnabled="False" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="SystemBtn" Content="系统设置" HorizontalAlignment="Left" Margin="1576,306,0,0" VerticalAlignment="Top" Width="90" Height="40" IsEnabled="False" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="AboutBtn" Content="关于系统" HorizontalAlignment="Left" Margin="1452,306,0,0" VerticalAlignment="Top" Width="90" Height="40" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="HistoryBtn" Content="检测记录" HorizontalAlignment="Left" Margin="1452,194,0,0" IsEnabled="False" VerticalAlignment="Top" Width="90" Height="40" Click="HistoryBtn_Click" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+        <Button x:Name="LogoutBtn" Content="退出登录" HorizontalAlignment="Left" Margin="1452,367,0,0" VerticalAlignment="Top" Width="90" Height="40" Background="#FFCBCAC3" Foreground="#DD150808" BorderBrush="#FF8D8799" Click="LogoutBtn_Click"/>
+-->
+        <Grid Margin="1500,60,100,972">
+            <Line Grid.Column="0" Grid.ColumnSpan="2" X1="20" Y1="20" X2="190" Y2="20" StrokeEndLineCap="Round" StrokeStartLineCap="Round" Stroke="#009696"  StrokeThickness="40"/>
+            <Label Content="  当前登录：" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="18" Height="40"/>
+            <Label x:Name="currentLogin" HorizontalAlignment="Left" Margin="110,0,0,0" VerticalAlignment="Top" FontSize="18" Height="40" />
+
+            <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Height="40" Width="40" >
+                <materialDesign:PopupBox DockPanel.Dock="Right"  PlacementMode="BottomAndAlignLeftEdges" StaysOpen="False" IsEnabled="True" Height="40">
+                    <StackPanel Height="240">
+                        <Button x:Name="SchemeBtn" Content="基础初始化" Click="SchemeBtn_Click" Height="40" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+                        <Button x:Name="SystemBtn" Content="系统设置" Height="40" Foreground="#DD150808" BorderBrush="#FF8D8799" Click="SystemBtn_Click"/>
+                        <Button x:Name="AboutBtn" Content="关于系统"  Height="40" Foreground="#DD150808" BorderBrush="#FF8D8799" Click="AboutBtn_Click"/>
+                        <Button x:Name="LogoutBtn" Content="退出登录" Click="LogoutBtn_Click" Height="40" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+                        <Button x:Name="QuitBtn" Content="退出系统" Click="QuitBtn_Click" Height="40" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+                        <Button x:Name="TestBtn" Content="测试专用" Click="TestBtn_Click" Height="40" Foreground="#DD150808" BorderBrush="#FF8D8799"/>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Window>

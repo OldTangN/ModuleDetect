@@ -1,0 +1,32 @@
+数据库 sxykjd/Qh_08mpac
+10.215.213.151:1521/mpac
+
+四线
+http://10.215.213.150:17001/InterfaceWS/InterfaceBusiness/services/MPCService?wsdl
+
+THIS
+http://10.215.213.150:17001/InterfaceWS/InterfaceBusiness/services/DetectService?wsdl
+
+
+正式库
+10.216.213.175 :11521
+sxykjd
+P_db_18mdsIs_SXJD
+
+mds
+
+西宁sys_no=555
+机台号定的是550
+
+
+bar code 2330000821901090000035
+的HPLC ID
+01029C01C1FB0253434131000019113431C73C50C489419C
+
+6330054005991802643862
+的那块
+01029C01C1FB024553413100000D51CCB4AA2CF4E7D247B8
+
+开机密码 Jlzx.123456
+IP  168.168.168.21   255.255.255.0   168.168.168.1
+IP  192.168.0.100    255.255.255.0
