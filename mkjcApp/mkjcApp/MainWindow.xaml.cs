@@ -2217,6 +2217,7 @@ namespace mkjcApp
 
         private void DynamicPWTest()//动态功耗测试
         {
+            int maxTimes = 3;
             switch (gzprotocol[CurrentGwIndex].locModuleObj.CheckStep)
             {
                 case 1://功率测试仪HOLD OFF
@@ -2362,6 +2363,7 @@ namespace mkjcApp
                         Dlt645Protocol[myScheme.gzChaoKongType[CurrentGwIndex]].SetSend645Num(CurrentGwIndex + 1, 3);
                     }
                     WaitingTimeout = 200;
+                    maxTimes--;
                     gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 10;
                     break;
                 case 10://等待通信结果
@@ -2394,9 +2396,17 @@ namespace mkjcApp
                         break;
                     }
                     WaitingTimeout--;
-                    if (WaitingTimeout <= 0)
+                    if (WaitingTimeout <= 0 && maxTimes > 0)
                     {
                         gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 9;
+                    }
+                    else
+                    {
+                        int CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
+                        int Viewitem = gzprotocol[CurrentGwIndex].locModuleObj.CheckItemToViewIndex[CheckItem];
+                        gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 2;
+                        SetItemLabelRed(CurrentGwIndex, Viewitem);
+                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 13;
                     }
                     break;
                 case 11:

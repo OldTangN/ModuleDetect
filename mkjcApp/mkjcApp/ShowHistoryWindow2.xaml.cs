@@ -304,7 +304,7 @@ namespace mkjcApp
                             rlt.result = "不合格";
                         else
                             rlt.result = "未检测";
-                        if (rlt.term.Contains("功耗"))
+                        if (rlt.term.Contains("功耗") && rlt.result_data != "不通过")
                         {
                             rlt.result_data += " W";
                         }
