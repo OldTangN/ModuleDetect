@@ -5,9 +5,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using MdsLibrary;
+using MyLogLib;
 using test214;
 using MessageBox = System.Windows.MessageBox;
-using MyLogLib;
 
 namespace mkjcApp
 {
@@ -528,7 +528,6 @@ namespace mkjcApp
                                             {
                                                 TotalResult = 1;
                                             }
-
                                         }
                                         SaveResult(TotalResult, gwIndex, gw_barcode, module_barcode, rest);
                                     }
@@ -1758,6 +1757,7 @@ namespace mkjcApp
                         StaticPWTest();
                         break;
                     case 3://动态功耗
+
                         DynamicPWTest();
                         break;
                     case 4://电源波动
@@ -2215,12 +2215,13 @@ namespace mkjcApp
             }
         }
 
+        private int maxZaiboTimes;
         private void DynamicPWTest()//动态功耗测试
         {
-            int maxTimes = 3;
             switch (gzprotocol[CurrentGwIndex].locModuleObj.CheckStep)
             {
                 case 1://功率测试仪HOLD OFF
+                    maxZaiboTimes = 3;//载波发送次数
                     RtnMsgValue[11] = 0;
                     GPMProtocol.GPMControl(7);
                     WaitingTimeout = 20;
@@ -2323,6 +2324,7 @@ namespace mkjcApp
                     GPMProtocol.GPMControl(8);
                     WaitingTimeout = 20;
                     gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 8;
+
                     break;
                 case 8://等待功率仪状态确认
                     if (RtnMsgValue[11] == 8)
@@ -2343,70 +2345,72 @@ namespace mkjcApp
                     }
                     break;
                 case 9://发送载波通信指令
-                    if ((gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 3)
-                        || (gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 4)
-                        || (gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 5))
                     {
-                        gzprotocol[CurrentGwIndex].SendMstCmd(7, 0, 0);
-                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 10;
                         WaitingTimeout = 200;
-                        break;
+                        maxZaiboTimes--;
+                        if ((gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 3)
+                          || (gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 4)
+                          || (gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 5))
+                        {
+                            gzprotocol[CurrentGwIndex].SendMstCmd(7, 0, 0);
+                        }
+                        else
+                        {
+                            RtnMsgValue[13 + myScheme.gzChaoKongType[CurrentGwIndex]] = 0;
+                            if (myScheme.gzProductId[CurrentGwIndex] == 4)//698协议模块
+                            {
+                                Dlt645Protocol[myScheme.gzChaoKongType[CurrentGwIndex]].SetSend698Num(CurrentGwIndex + 1, 3);
+                            }
+                            else
+                            {
+                                Dlt645Protocol[myScheme.gzChaoKongType[CurrentGwIndex]].SetSend645Num(CurrentGwIndex + 1, 3);
+                            }
+                        }
+                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 10;
                     }
-                    RtnMsgValue[13 + myScheme.gzChaoKongType[CurrentGwIndex]] = 0;
-
-                    if (myScheme.gzProductId[CurrentGwIndex] == 4)//698协议模块
-                    {
-                        Dlt645Protocol[myScheme.gzChaoKongType[CurrentGwIndex]].SetSend698Num(CurrentGwIndex + 1, 3);
-                    }
-                    else
-                    {
-                        Dlt645Protocol[myScheme.gzChaoKongType[CurrentGwIndex]].SetSend645Num(CurrentGwIndex + 1, 3);
-                    }
-                    WaitingTimeout = 200;
-                    maxTimes--;
-                    gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 10;
                     break;
                 case 10://等待通信结果
-                    if ((gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 3)
+                    {
+                        WaitingTimeout--;
+                        int CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
+                        if ((gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 3)
                         || (gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 4)
                         || (gzprotocol[CurrentGwIndex].locModuleObj.ModuleType == 5))
-                    {
-                        int CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
-                        if (gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] != 0)
                         {
-                            gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
-                            break;
+                            CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
+                            if (gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] != 0)
+                            {
+                                gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
+                                break;
+                            }
+                            Dispatcher.BeginInvoke(new Action(delegate
+                            {
+                                String str = "通信超时:" + WaitingTimeout;
+                                ShowSysMsgLabel(str);
+                            }));
                         }
-                        WaitingTimeout--;
-                        Dispatcher.BeginInvoke(new Action(delegate
+                        else
                         {
-                            String str = "通信超时:" + WaitingTimeout;
-                            ShowSysMsgLabel(str);
+                            if (RtnMsgValue[13 + myScheme.gzChaoKongType[CurrentGwIndex]] >= 1)
+                            {
+                                gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
+                                break;
+                            }
                         }
-                            ));
-                        if (WaitingTimeout <= 0)
+
+                        if (WaitingTimeout <= 0 && maxZaiboTimes > 0)
                         {
                             gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 9;
+                            break;
                         }
-                        break;
-                    }
-                    if (RtnMsgValue[13 + myScheme.gzChaoKongType[CurrentGwIndex]] >= 1)
-                    {
-                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
-                        break;
-                    }
-                    WaitingTimeout--;
-                    if (WaitingTimeout <= 0 && maxTimes > 0)
-                    {
-                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 9;
-                    }
-                    else
-                    {
-                        int CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
-                        int Viewitem = gzprotocol[CurrentGwIndex].locModuleObj.CheckItemToViewIndex[CheckItem];
-                        gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 2;
-                        SetItemLabelRed(CurrentGwIndex, Viewitem);
-                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 13;
+                        if (maxZaiboTimes <= 0)
+                        {
+                            CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
+                            int Viewitem = gzprotocol[CurrentGwIndex].locModuleObj.CheckItemToViewIndex[CheckItem];
+                            gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 2;
+                            SetItemLabelRed(CurrentGwIndex, Viewitem);
+                            gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 13;
+                        }
                     }
                     break;
                 case 11:
@@ -2416,53 +2420,55 @@ namespace mkjcApp
                     gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 12;
                     break;
                 case 12://等待功率仪读数
-                    if (RtnMsgValue[11] == 10)
                     {
-                        int CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
-                        int Viewitem = gzprotocol[CurrentGwIndex].locModuleObj.CheckItemToViewIndex[CheckItem];
+                        if (RtnMsgValue[11] == 10)
+                        {
+                            int CheckItem = gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem;
+                            int Viewitem = gzprotocol[CurrentGwIndex].locModuleObj.CheckItemToViewIndex[CheckItem];
 
-                        decimal Threshold = myScheme.ModuleDynamicPw[gzprotocol[CurrentGwIndex].locModuleObj.ModuleType];
-                        if (GPMPReadValue < myScheme.GwPWValue[CurrentGwIndex])
+                            decimal Threshold = myScheme.ModuleDynamicPw[gzprotocol[CurrentGwIndex].locModuleObj.ModuleType];
+                            if (GPMPReadValue < myScheme.GwPWValue[CurrentGwIndex])
+                            {
+                                gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
+                                Dispatcher.BeginInvoke(new Action(delegate
+                                {
+                                    ShowSysMsgLabel("工位" + CurrentGwIndex + "功率异常！");
+                                }
+                                ));
+                            }
+                            GPMPReadValue = GPMPReadValue - myScheme.GwPWValue[CurrentGwIndex];
+                            if (GPMPReadValue < Threshold)
+                            {
+                                gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 1;
+                                SetItemLabelGreen(CurrentGwIndex, Viewitem);
+                            }
+                            else
+                            {
+                                gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 2;
+                                SetItemLabelRed(CurrentGwIndex, Viewitem);
+
+                            }
+                            gzprotocol[CurrentGwIndex].locModuleObj.resultValue[CheckItem] = GPMPReadValue;
+                            //gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem = -1;
+                            gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 13;
+                            decimal TempGPMPReadValue = GPMPReadValue;
+                            Dispatcher.BeginInvoke(new Action(delegate
+                            {
+                                GLPanelView(4, "", TempGPMPReadValue);
+                            }));
+                            break;
+                        }
+                        WaitingTimeout--;
+
+                        if (WaitingTimeout <= 0)
                         {
                             gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
                             Dispatcher.BeginInvoke(new Action(delegate
                             {
-                                ShowSysMsgLabel("工位" + CurrentGwIndex + "功率异常！");
+                                ShowSysMsgLabel("功率仪读取失败6");
                             }
                             ));
                         }
-                        GPMPReadValue = GPMPReadValue - myScheme.GwPWValue[CurrentGwIndex];
-                        if (GPMPReadValue < Threshold)
-                        {
-                            gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 1;
-                            SetItemLabelGreen(CurrentGwIndex, Viewitem);
-                        }
-                        else
-                        {
-                            gzprotocol[CurrentGwIndex].locModuleObj.checkresult[CheckItem] = 2;
-                            SetItemLabelRed(CurrentGwIndex, Viewitem);
-
-                        }
-                        gzprotocol[CurrentGwIndex].locModuleObj.resultValue[CheckItem] = GPMPReadValue;
-                        //gzprotocol[CurrentGwIndex].locModuleObj.CurrentCheckItem = -1;
-                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 13;
-                        decimal TempGPMPReadValue = GPMPReadValue;
-                        Dispatcher.BeginInvoke(new Action(delegate
-                        {
-                            GLPanelView(4, "", TempGPMPReadValue);
-                        }));
-                        break;
-                    }
-                    WaitingTimeout--;
-
-                    if (WaitingTimeout <= 0)
-                    {
-                        gzprotocol[CurrentGwIndex].locModuleObj.CheckStep = 11;
-                        Dispatcher.BeginInvoke(new Action(delegate
-                        {
-                            ShowSysMsgLabel("功率仪读取失败6");
-                        }
-                        ));
                     }
                     break;
                 case 13://将工位退出功率测量回路

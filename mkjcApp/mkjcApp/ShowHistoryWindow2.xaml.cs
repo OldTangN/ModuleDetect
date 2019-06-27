@@ -25,6 +25,8 @@ namespace mkjcApp
         public ShowHistoryWindow2()
         {
             InitializeComponent();
+            FromDate.Text = DateTime.Now.AddDays(-1).ToShortDateString();
+            ToDate.Text = DateTime.Now.ToShortDateString();
         }
 
 
@@ -50,11 +52,11 @@ namespace mkjcApp
             }
             if (FromDate.SelectedDate.HasValue)
             {
-                sqlstring += $" and date >= '{FromDate.SelectedDate.Value.ToString("yyyy-MM-dd")}' ";//date(YQ_date)
+                sqlstring += $" and date >= '{FromDate.SelectedDate.Value.ToString("yyyy-MM-dd 00:00:00")}' ";//date(YQ_date)
             }
             if (ToDate.SelectedDate.HasValue)
             {
-                sqlstring += $" and date <= '{ToDate.SelectedDate.Value.ToString("yyyy-MM-dd")}' ";// date(YQ_date)
+                sqlstring += $" and date <= '{ToDate.SelectedDate.Value.ToString("yyyy-MM-dd 23:59:59")}' ";// date(YQ_date)
             }
 
             DataTable dtbl = MySQLHelper.SQLSelect(sqlstring);

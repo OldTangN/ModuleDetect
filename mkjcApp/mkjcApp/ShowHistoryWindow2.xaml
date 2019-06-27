@@ -47,9 +47,9 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Label Content="日期：" />
-                <DatePicker x:Name="FromDate" DisplayDate="2019-01-01" DisplayDateEnd="{Binding SelectedDate, ElementName=ToDate,UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" FontFamily="Microsoft YaHei" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" Height="50" MinWidth="100" Margin="0,0,0,0" Foreground="Black"/>
+                <DatePicker Style="{x:Null}" x:Name="FromDate" VerticalContentAlignment="Center" FontFamily="Microsoft YaHei" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" Height="50" Width="150" Margin="0,0,0,0" Foreground="Black"/>
                 <Label Content="至" Margin="0,0,0,0" />
-                <DatePicker x:Name="ToDate" DisplayDateStart="{Binding SelectedDate, ElementName=FromDate,UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" FontFamily="Microsoft YaHei" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" Height="50" MinWidth="100" Margin="0,0,0,0" Foreground="Black"/>
+                <DatePicker Style="{x:Null}" x:Name="ToDate" DisplayDateStart="{Binding SelectedDate, ElementName=FromDate,UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" FontSize="20" HorizontalAlignment="Left" VerticalAlignment="Center" Height="50" Width="150" Margin="0,0,0,0" Foreground="Black"/>
                 <Label Content="任务号：" Margin="30 0 0 0"></Label>
                 <TextBox Name="txtTaskNo" Width="220" Height="40"></TextBox>
                 <Label Content="条码：" Margin="30 0 0 0"></Label>
